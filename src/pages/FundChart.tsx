@@ -1,6 +1,7 @@
 import { useState, useMemo } from "react";
 import DashboardLayout from "@/components/layout/DashboardLayout";
-import { holdingFunds, generateNavHistory } from "@/data/mockData";
+import { generateNavHistory } from "@/data/mockData";
+import { useFund } from "@/context/FundContext";
 import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend,
 } from "recharts";
@@ -14,7 +15,8 @@ const periods = [
 ];
 
 const FundChart = () => {
-  const [selectedFund, setSelectedFund] = useState(holdingFunds[0].code);
+  const { holdings } = useFund();
+  const [selectedFund, setSelectedFund] = useState(holdings[0]?.code || "");
   const [periodIdx, setPeriodIdx] = useState(3);
   const [showCsi300, setShowCsi300] = useState(true);
   const [mode, setMode] = useState<"cumulative" | "annualized">("cumulative");
@@ -32,7 +34,7 @@ const FundChart = () => {
     return history;
   }, [selectedFund, periodIdx, mode]);
 
-  const fund = holdingFunds.find((f) => f.code === selectedFund)!;
+  const fund = holdings.find((f) => f.code === selectedFund);
 
   const CustomTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
@@ -54,6 +56,8 @@ const FundChart = () => {
     return null;
   };
 
+  if (!fund) return <DashboardLayout><p className="text-muted-foreground text-center py-20">暂无持仓基金</p></DashboardLayout>;
+
   return (
     <DashboardLayout>
       <div className="mb-6">
@@ -67,7 +71,7 @@ const FundChart = () => {
           onChange={(e) => setSelectedFund(e.target.value)}
           className="bg-card border border-border rounded-lg px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-ring"
         >
-          {holdingFunds.map((f) => (
+          {holdings.map((f) => (
             <option key={f.code} value={f.code}>
               {f.name} ({f.code})
             </option>
