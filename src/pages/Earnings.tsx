@@ -81,8 +81,8 @@ const Earnings = () => {
             <AreaChart data={data}>
               <defs>
                 <linearGradient id="profitGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="hsl(160, 70%, 44%)" stopOpacity={0.3} />
-                  <stop offset="95%" stopColor="hsl(160, 70%, 44%)" stopOpacity={0} />
+                  <stop offset="5%" stopColor="hsl(0, 85%, 55%)" stopOpacity={0.3} />
+                  <stop offset="95%" stopColor="hsl(0, 85%, 55%)" stopOpacity={0} />
                 </linearGradient>
               </defs>
               <CartesianGrid strokeDasharray="3 3" stroke="hsl(220, 14%, 16%)" />
@@ -104,11 +104,11 @@ const Earnings = () => {
               <Area
                 type="monotone"
                 dataKey="earnings"
-                stroke="hsl(160, 70%, 44%)"
+                stroke="hsl(0, 85%, 55%)"
                 fill="url(#profitGrad)"
                 strokeWidth={2}
                 dot={false}
-                activeDot={{ r: 4, fill: "hsl(160, 70%, 44%)" }}
+                activeDot={{ r: 4, fill: "hsl(0, 85%, 55%)" }}
               />
             </AreaChart>
           </ResponsiveContainer>

@@ -63,45 +63,48 @@ const Index = () => {
       </div>
 
       {/* ── Hero Section: Today's P&L ── */}
-      <div className={`rounded-2xl border p-6 mb-6 animate-slide-up relative overflow-hidden ${todayProfit >= 0
-        ? "border-profit/20 bg-gradient-to-br from-profit/[0.06] via-card to-card glow-profit"
-        : "border-loss/20 bg-gradient-to-br from-loss/[0.06] via-card to-card glow-loss"
+      <div className={`rounded-xl border p-6 mb-6 animate-slide-up relative overflow-hidden ${todayProfit >= 0
+        ? "border-profit/20 bg-gradient-to-br from-profit/[0.05] via-card to-card glow-profit"
+        : "border-loss/20 bg-gradient-to-br from-loss/[0.05] via-card to-card glow-loss"
       }`}>
         {/* Background sparkline watermark */}
-        <div className="absolute right-0 bottom-0 w-[55%] h-full opacity-30 pointer-events-none">
-          <MiniSparkline data={sparkData} color={todayProfit >= 0 ? "hsl(160, 70%, 44%)" : "hsl(0, 72%, 56%)"} height={160} />
+        <div className="absolute right-0 bottom-0 w-[55%] h-full opacity-20 pointer-events-none">
+          <MiniSparkline data={sparkData} color={todayProfit >= 0 ? "hsl(0, 85%, 55%)" : "hsl(140, 60%, 38%)"} height={160} />
         </div>
 
         <div className="relative z-10">
-          <div className="flex items-center gap-2 mb-2">
+          <div className="flex items-center gap-2 mb-1">
             {todayProfit >= 0
               ? <TrendingUp className="w-5 h-5 text-profit" />
               : <TrendingDown className="w-5 h-5 text-loss" />
             }
-            <span className="text-sm text-muted-foreground font-medium">今日收益</span>
+            <span className="text-xs text-muted-foreground font-medium uppercase tracking-wider">今日收益</span>
           </div>
 
-          <div className="flex items-end gap-4 mb-4">
-            <p className={`text-4xl font-bold font-mono-nums tracking-tight ${todayProfit >= 0 ? "text-profit" : "text-loss"}`}>
+          <div className="flex items-end gap-4 mb-3">
+            <p className={`text-5xl font-extrabold font-mono-nums tracking-tighter ${todayProfit >= 0 ? "text-profit" : "text-loss"}`}>
               {formatMoney(todayProfit, true)}
             </p>
-            <p className={`text-lg font-semibold font-mono-nums mb-1 ${todayRate >= 0 ? "text-profit" : "text-loss"}`}>
+            <p className={`text-xl font-bold font-mono-nums mb-1.5 ${todayRate >= 0 ? "text-profit" : "text-loss"}`}>
               {todayRate >= 0 ? "+" : ""}{todayRate.toFixed(4)}%
             </p>
           </div>
 
-          {/* Change badge */}
-          <div className="flex items-center gap-3">
-            <div className={`flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-medium ${
+          {/* Metrics row */}
+          <div className="flex items-center gap-4 flex-wrap">
+            <div className={`flex items-center gap-1 px-2.5 py-1 rounded text-xs font-medium ${
               profitDiff >= 0 ? "bg-profit/10 text-profit" : "bg-loss/10 text-loss"
             }`}>
               {profitDiff >= 0 ? <ArrowUp className="w-3 h-3" /> : <ArrowDown className="w-3 h-3" />}
               <span className="font-mono-nums">{formatMoney(Math.abs(profitDiff))}</span>
               <span className="text-muted-foreground ml-1">vs 昨日</span>
             </div>
-            <span className="text-xs text-muted-foreground">
-              持仓 <span className="text-foreground font-medium">{holdings.length}</span> 只基金
-            </span>
+            <div className="text-xs text-muted-foreground flex items-center gap-1.5">
+              <span>昨日 <span className={`font-mono-nums font-semibold ${yesterdayProfit >= 0 ? "text-profit" : "text-loss"}`}>{formatMoney(yesterdayProfit, true)}</span></span>
+            </div>
+            <div className="text-xs text-muted-foreground">
+              持仓 <span className="text-foreground font-semibold">{holdings.length}</span> 只
+            </div>
           </div>
         </div>
       </div>
@@ -208,7 +211,7 @@ const Index = () => {
             </span>
           </div>
           <div className="mt-2">
-            <MiniSparkline data={sparkData} color={yearlyProfit >= 0 ? "hsl(160, 70%, 44%)" : "hsl(0, 72%, 56%)"} height={32} />
+            <MiniSparkline data={sparkData} color={yearlyProfit >= 0 ? "hsl(0, 85%, 55%)" : "hsl(140, 60%, 38%)"} height={32} />
           </div>
         </div>
       </div>

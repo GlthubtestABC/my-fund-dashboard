@@ -2,9 +2,9 @@ import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts";
 import { useFund } from "@/context/FundContext";
 
 const COLORS = [
-  "hsl(160, 70%, 44%)", "hsl(200, 80%, 55%)", "hsl(280, 65%, 60%)",
-  "hsl(38, 92%, 50%)", "hsl(340, 75%, 55%)", "hsl(190, 70%, 50%)",
-  "hsl(120, 50%, 45%)", "hsl(30, 80%, 55%)",
+  "hsl(0, 85%, 55%)", "hsl(35, 95%, 55%)", "hsl(210, 70%, 55%)",
+  "hsl(280, 55%, 55%)", "hsl(180, 60%, 45%)", "hsl(320, 60%, 50%)",
+  "hsl(50, 80%, 50%)", "hsl(150, 50%, 45%)",
 ];
 
 const ProfitDistributionChart = () => {

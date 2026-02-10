@@ -191,8 +191,8 @@ const FundChart = () => {
 
               {/* Main fund line */}
               <Line type="monotone" dataKey="fundReturn" name={fund.name}
-                stroke="hsl(160, 70%, 44%)" strokeWidth={2.5} dot={false}
-                activeDot={{ r: 4, fill: "hsl(160, 70%, 44%)" }} />
+                stroke="hsl(0, 85%, 55%)" strokeWidth={2.5} dot={false}
+                activeDot={{ r: 4, fill: "hsl(0, 85%, 55%)" }} />
 
               {/* Benchmark lines */}
               {activeBenchmarks.map((b) => (
