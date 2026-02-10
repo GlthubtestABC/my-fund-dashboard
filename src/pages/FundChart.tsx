@@ -17,7 +17,7 @@ import {
 } from "recharts";
 
 const periods = [
-  { label: "1月", days: 30 },
+  
   { label: "3月", days: 90 },
   { label: "6月", days: 180 },
   { label: "1年", days: 365 },
