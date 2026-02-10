@@ -108,4 +108,108 @@
   .card-gradient {
     background: var(--gradient-card);
   }
+
+  /* ── Sci-fi / Futuristic Effects ── */
+
+  /* Scanning horizontal line */
+  @keyframes scanline {
+    0% { top: -2px; opacity: 1; }
+    100% { top: 100%; opacity: 0.3; }
+  }
+  .scan-line::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, hsl(var(--profit) / 0.6), transparent);
+    animation: scanline 3s ease-in-out infinite;
+    pointer-events: none;
+  }
+
+  /* Shimmer sweep */
+  @keyframes shimmer {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+  }
+  .shimmer-effect {
+    position: relative;
+    overflow: hidden;
+  }
+  .shimmer-effect::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      105deg,
+      transparent 40%,
+      hsl(var(--profit) / 0.06) 45%,
+      hsl(var(--profit) / 0.12) 50%,
+      hsl(var(--profit) / 0.06) 55%,
+      transparent 60%
+    );
+    animation: shimmer 4s ease-in-out infinite;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  /* Glow pulse for numbers */
+  @keyframes glow-pulse {
+    0%, 100% { text-shadow: 0 0 8px currentColor, 0 0 16px hsl(var(--profit) / 0.2); }
+    50% { text-shadow: 0 0 16px currentColor, 0 0 32px hsl(var(--profit) / 0.4); }
+  }
+  .glow-text {
+    animation: glow-pulse 2.5s ease-in-out infinite;
+  }
+
+  /* Border glow animation */
+  @keyframes border-glow {
+    0%, 100% { border-color: hsl(var(--border)); }
+    50% { border-color: hsl(var(--profit) / 0.3); }
+  }
+  .border-glow {
+    animation: border-glow 3s ease-in-out infinite;
+  }
+
+  /* Data ticker flash */
+  @keyframes data-flash {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.6; }
+  }
+  .data-tick {
+    animation: data-flash 1.5s ease-in-out infinite;
+  }
+
+  /* Cyber grid background */
+  .cyber-grid {
+    background-image:
+      linear-gradient(hsl(var(--border) / 0.3) 1px, transparent 1px),
+      linear-gradient(90deg, hsl(var(--border) / 0.3) 1px, transparent 1px);
+    background-size: 40px 40px;
+  }
+
+  /* Corner accent decorations */
+  .corner-accent::before,
+  .corner-accent::after {
+    content: '';
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    border-color: hsl(var(--profit) / 0.4);
+    pointer-events: none;
+  }
+  .corner-accent::before {
+    top: -1px;
+    left: -1px;
+    border-top: 1.5px solid;
+    border-left: 1.5px solid;
+    border-color: inherit;
+  }
+  .corner-accent::after {
+    bottom: -1px;
+    right: -1px;
+    border-bottom: 1.5px solid;
+    border-right: 1.5px solid;
+    border-color: inherit;
+  }
 }
