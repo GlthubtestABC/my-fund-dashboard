@@ -29,8 +29,11 @@ const Watchlist = () => {
     setSelectedTags((prev) => prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]);
   };
 
-  const formatPercent = (v: number) => `${v > 0 ? "+" : ""}${v.toFixed(2)}%`;
-  const pColor = (v: number) => v > 0 ? "text-profit" : v < 0 ? "text-loss" : "text-muted-foreground";
+  const formatPercent = (v: number | undefined) => {
+    if (v === undefined || v === null || isNaN(v)) return "--";
+    return `${v > 0 ? "+" : ""}${v.toFixed(2)}%`;
+  };
+  const pColor = (v: number | undefined) => !v ? "text-muted-foreground" : v > 0 ? "text-profit" : v < 0 ? "text-loss" : "text-muted-foreground";
 
   const handleAdd = () => {
     const code = newCode.trim();
