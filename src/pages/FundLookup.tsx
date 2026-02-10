@@ -55,14 +55,19 @@ const generateFundDetail = (code: string) => {
   const trackingError = parseFloat(r(1, 15).toFixed(2));
 
   // Nav history 60 days
-  const navHistory: { date: string; nav: number }[] = [];
+  const navHistory: { date: string; nav: number; returnRate: number }[] = [];
   let v = nav * 0.88;
+  const baseNav = nav * 0.88;
   const now = new Date();
   for (let i = 59; i >= 0; i--) {
     v *= 1 + (Math.sin(seed + i) * 0.01 + (Math.random() - 0.47) * 0.025);
     const d = new Date(now);
     d.setDate(d.getDate() - i);
-    navHistory.push({ date: d.toISOString().split("T")[0], nav: parseFloat(v.toFixed(4)) });
+    navHistory.push({
+      date: d.toISOString().split("T")[0],
+      nav: parseFloat(v.toFixed(4)),
+      returnRate: parseFloat(((v - baseNav) / baseNav * 100).toFixed(2)),
+    });
   }
 
   // Top holdings
@@ -278,10 +283,10 @@ const FundLookup = () => {
                 ))}
               </motion.div>
 
-              {/* Charts + Metrics Row */}
-              <div className="grid grid-cols-3 gap-4">
+              {/* Charts Row - Full Width */}
+              <div className="grid grid-cols-2 gap-4">
                 {/* NAV Chart */}
-                <motion.div variants={scaleIn} custom={2} className="col-span-2">
+                <motion.div variants={scaleIn} custom={2}>
                   <Card className="corner-accent h-full">
                     <CardHeader className="pb-2 pt-4 px-4">
                       <CardTitle className="text-sm flex items-center gap-2">
@@ -311,8 +316,48 @@ const FundLookup = () => {
                   </Card>
                 </motion.div>
 
-                {/* Key Metrics */}
+                {/* Return Rate Chart */}
                 <motion.div variants={scaleIn} custom={3}>
+                  <Card className="corner-accent h-full">
+                    <CardHeader className="pb-2 pt-4 px-4">
+                      <CardTitle className="text-sm flex items-center gap-2">
+                        <TrendingUp className="w-4 h-4 text-primary" />
+                        近60日涨幅曲线
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="px-4 pb-4">
+                      <ResponsiveContainer width="100%" height={200}>
+                        <AreaChart data={fundDetail.navHistory}>
+                          <defs>
+                            <linearGradient id="returnGrad" x1="0" y1="0" x2="0" y2="1">
+                              <stop offset="0%" stopColor="#34d399" stopOpacity={0.3} />
+                              <stop offset="100%" stopColor="#34d399" stopOpacity={0} />
+                            </linearGradient>
+                          </defs>
+                          <XAxis dataKey="date" tick={false} axisLine={false} />
+                          <YAxis
+                            domain={["auto", "auto"]}
+                            tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }}
+                            axisLine={false} tickLine={false}
+                            tickFormatter={(v) => `${v}%`}
+                          />
+                          <Tooltip
+                            contentStyle={{ backgroundColor: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: 8, fontSize: 12 }}
+                            labelStyle={{ color: "hsl(var(--muted-foreground))" }}
+                            formatter={(value: number) => [`${value}%`, "涨幅"]}
+                          />
+                          <Area type="monotone" dataKey="returnRate" stroke="#34d399" fill="url(#returnGrad)" strokeWidth={2} dot={false} />
+                        </AreaChart>
+                      </ResponsiveContainer>
+                    </CardContent>
+                  </Card>
+                </motion.div>
+              </div>
+
+              {/* Metrics + Fund Info + Top Holdings */}
+              <div className="grid grid-cols-3 gap-4">
+                {/* Key Metrics */}
+                <motion.div variants={scaleIn} custom={4}>
                   <Card className="corner-accent h-full">
                     <CardHeader className="pb-2 pt-4 px-4">
                       <CardTitle className="text-sm flex items-center gap-2">
@@ -348,12 +393,9 @@ const FundLookup = () => {
                     </CardContent>
                   </Card>
                 </motion.div>
-              </div>
 
-              {/* Fund Info + Top Holdings */}
-              <div className="grid grid-cols-2 gap-4">
                 {/* Fund Info */}
-                <motion.div variants={fadeUp} custom={4}>
+                <motion.div variants={fadeUp} custom={5}>
                   <Card className="corner-accent">
                     <CardHeader className="pb-2 pt-4 px-4">
                       <CardTitle className="text-sm flex items-center gap-2">
