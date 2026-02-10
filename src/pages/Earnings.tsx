@@ -1,10 +1,12 @@
 import { useState, useMemo } from "react";
+import { motion } from "framer-motion";
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import { generateNavHistory } from "@/data/mockData";
 import { useFund } from "@/context/FundContext";
 import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine,
 } from "recharts";
+import { fadeUp, slideInLeft } from "@/lib/motion";
 
 const Earnings = () => {
   const { holdings } = useFund();
@@ -42,33 +44,32 @@ const Earnings = () => {
 
   return (
     <DashboardLayout>
-      <div className="mb-6">
+      <motion.div variants={slideInLeft} initial="hidden" animate="visible" className="mb-6">
         <h1 className="text-xl font-bold text-foreground">收益曲线</h1>
         <p className="text-sm text-muted-foreground mt-1">单基金持仓收益走势</p>
-      </div>
+      </motion.div>
 
-      <div className="mb-4">
+      <motion.div variants={fadeUp} initial="hidden" animate="visible" custom={1} className="mb-4">
         <select
           value={selectedFund}
           onChange={(e) => setSelectedFund(e.target.value)}
-          className="bg-card border border-border rounded-lg px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-ring"
+          className="bg-card border border-border rounded-lg px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-ring transition-shadow focus:shadow-[0_0_12px_hsl(var(--ring)/0.15)]"
         >
           {holdings.map((f) => (
-            <option key={f.code} value={f.code}>
-              {f.name} ({f.code})
-            </option>
+            <option key={f.code} value={f.code}>{f.name} ({f.code})</option>
           ))}
         </select>
-      </div>
+      </motion.div>
 
-      <div className="card-gradient rounded-xl border border-border p-5 animate-slide-up">
+      <motion.div variants={fadeUp} initial="hidden" animate="visible" custom={2}
+        className="card-gradient rounded-xl border border-border p-5 relative corner-accent border-glow">
         <div className="flex items-center justify-between mb-4">
           <div>
             <h3 className="text-sm font-semibold text-foreground">{fund.name}</h3>
             <p className="text-xs text-muted-foreground">持仓收益 · 成本 ¥{fund.buyAmount.toLocaleString()}</p>
           </div>
           <div className="text-right font-mono-nums">
-            <p className={`text-lg font-bold ${fund.profit >= 0 ? "text-profit" : "text-loss"}`}>
+            <p className={`text-lg font-bold ${fund.profit >= 0 ? "text-profit glow-text" : "text-loss"}`}>
               {fund.profit >= 0 ? "+" : ""}¥{fund.profit.toFixed(2)}
             </p>
             <p className={`text-xs ${fund.profitRate >= 0 ? "text-profit" : "text-loss"}`}>
@@ -85,35 +86,19 @@ const Earnings = () => {
                   <stop offset="95%" stopColor="hsl(0, 85%, 55%)" stopOpacity={0} />
                 </linearGradient>
               </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="hsl(220, 14%, 16%)" />
-              <XAxis
-                dataKey="date"
-                tick={{ fill: "hsl(215, 12%, 50%)", fontSize: 11 }}
-                tickLine={false}
-                axisLine={{ stroke: "hsl(220, 14%, 16%)" }}
-                tickFormatter={(v) => v.slice(5)}
-              />
-              <YAxis
-                tick={{ fill: "hsl(215, 12%, 50%)", fontSize: 11 }}
-                tickLine={false}
-                axisLine={{ stroke: "hsl(220, 14%, 16%)" }}
-                tickFormatter={(v) => `¥${v}`}
-              />
+              <CartesianGrid strokeDasharray="3 3" stroke="hsl(228, 10%, 13%)" />
+              <XAxis dataKey="date" tick={{ fill: "hsl(220, 8%, 45%)", fontSize: 11 }} tickLine={false}
+                axisLine={{ stroke: "hsl(228, 10%, 13%)" }} tickFormatter={(v) => v.slice(5)} />
+              <YAxis tick={{ fill: "hsl(220, 8%, 45%)", fontSize: 11 }} tickLine={false}
+                axisLine={{ stroke: "hsl(228, 10%, 13%)" }} tickFormatter={(v) => `¥${v}`} />
               <Tooltip content={<CustomTooltip />} />
-              <ReferenceLine y={0} stroke="hsl(215, 12%, 50%)" strokeDasharray="3 3" label={{ value: "盈亏线", fill: "hsl(215, 12%, 50%)", fontSize: 10 }} />
-              <Area
-                type="monotone"
-                dataKey="earnings"
-                stroke="hsl(0, 85%, 55%)"
-                fill="url(#profitGrad)"
-                strokeWidth={2}
-                dot={false}
-                activeDot={{ r: 4, fill: "hsl(0, 85%, 55%)" }}
-              />
+              <ReferenceLine y={0} stroke="hsl(220, 8%, 45%)" strokeDasharray="3 3" label={{ value: "盈亏线", fill: "hsl(220, 8%, 45%)", fontSize: 10 }} />
+              <Area type="monotone" dataKey="earnings" stroke="hsl(0, 85%, 55%)" fill="url(#profitGrad)"
+                strokeWidth={2} dot={false} activeDot={{ r: 4, fill: "hsl(0, 85%, 55%)" }} />
             </AreaChart>
           </ResponsiveContainer>
         </div>
-      </div>
+      </motion.div>
     </DashboardLayout>
   );
 };
