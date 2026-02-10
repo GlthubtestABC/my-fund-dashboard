@@ -17,8 +17,10 @@ import { LineChart, Line, ResponsiveContainer, AreaChart, Area, XAxis, YAxis, To
 // Generate mock detailed fund info based on code
 const generateFundDetail = (code: string) => {
   const seed = code.split("").reduce((a, c) => a + c.charCodeAt(0), 0);
+  let callIdx = 0;
   const r = (min: number, max: number) => {
-    const x = Math.sin(seed * 9301 + 49297) % 1;
+    callIdx++;
+    const x = Math.sin(seed * 9301 + 49297 + callIdx * 7919) % 1;
     return min + Math.abs(x) * (max - min);
   };
 
