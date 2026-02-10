@@ -363,114 +363,191 @@ const FundLookup = () => {
                 </div>
               </div>
 
-              {/* Metrics + Fund Info + Top Holdings */}
-              <div className="grid grid-cols-3 gap-4">
-                {/* Key Metrics */}
-                <motion.div variants={scaleIn} custom={4}>
-                  <Card className="corner-accent h-full">
-                    <CardHeader className="pb-2 pt-4 px-4">
-                      <CardTitle className="text-sm flex items-center gap-2">
-                        <BarChart3 className="w-4 h-4 text-primary" />
-                        核心指标
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent className="px-4 pb-4 space-y-3">
+              {/* Core Risk Metrics - Full Width Detailed */}
+              <motion.div variants={fadeUp} custom={4}>
+                <Card className="corner-accent">
+                  <CardHeader className="pb-3 pt-4 px-5">
+                    <CardTitle className="text-sm flex items-center gap-2">
+                      <Shield className="w-4 h-4 text-primary" />
+                      核心风险指标
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="px-5 pb-5">
+                    <div className="grid grid-cols-5 gap-4">
+                      {/* Sharpe */}
+                      <div className="relative p-4 rounded-xl bg-muted/30 border border-border/50 space-y-2">
+                        <div className="flex items-center gap-2 text-muted-foreground">
+                          <Shield className="w-4 h-4" />
+                          <span className="text-xs font-medium">夏普比率</span>
+                        </div>
+                        <p className={`text-2xl font-bold font-mono-nums ${fundDetail.sharpe > 1 ? "text-emerald-400" : fundDetail.sharpe > 0.5 ? "text-yellow-400" : "text-red-400"}`}>
+                          {fundDetail.sharpe.toFixed(2)}
+                        </p>
+                        <div className="w-full h-1.5 rounded-full bg-muted overflow-hidden">
+                          <motion.div
+                            className={`h-full rounded-full ${fundDetail.sharpe > 1 ? "bg-emerald-400" : fundDetail.sharpe > 0.5 ? "bg-yellow-400" : "bg-red-400"}`}
+                            initial={{ width: 0 }}
+                            animate={{ width: `${Math.min(100, (fundDetail.sharpe / 2.5) * 100)}%` }}
+                            transition={{ delay: 0.4, duration: 0.6 }}
+                          />
+                        </div>
+                        <p className="text-[10px] text-muted-foreground leading-tight">
+                          {fundDetail.sharpe > 1.5 ? "优秀：单位风险超额回报高" : fundDetail.sharpe > 1 ? "良好：风险调整后收益较好" : fundDetail.sharpe > 0.5 ? "一般：风险收益比中等" : "较差：承担风险未获足够补偿"}
+                        </p>
+                      </div>
+
+                      {/* Max Drawdown */}
+                      <div className="relative p-4 rounded-xl bg-muted/30 border border-border/50 space-y-2">
+                        <div className="flex items-center gap-2 text-muted-foreground">
+                          <TrendingDown className="w-4 h-4" />
+                          <span className="text-xs font-medium">最大回撤</span>
+                        </div>
+                        <p className={`text-2xl font-bold font-mono-nums ${fundDetail.maxDrawdown > -15 ? "text-emerald-400" : fundDetail.maxDrawdown > -30 ? "text-yellow-400" : "text-red-400"}`}>
+                          {fundDetail.maxDrawdown}%
+                        </p>
+                        <div className="w-full h-1.5 rounded-full bg-muted overflow-hidden">
+                          <motion.div
+                            className={`h-full rounded-full ${fundDetail.maxDrawdown > -15 ? "bg-emerald-400" : fundDetail.maxDrawdown > -30 ? "bg-yellow-400" : "bg-red-400"}`}
+                            initial={{ width: 0 }}
+                            animate={{ width: `${Math.min(100, Math.abs(fundDetail.maxDrawdown) * 2)}%` }}
+                            transition={{ delay: 0.45, duration: 0.6 }}
+                          />
+                        </div>
+                        <p className="text-[10px] text-muted-foreground leading-tight">
+                          {fundDetail.maxDrawdown > -15 ? "回撤可控，风险管理优秀" : fundDetail.maxDrawdown > -30 ? "中等回撤，注意仓位控制" : "回撤较大，高风险承受力要求"}
+                        </p>
+                      </div>
+
+                      {/* Volatility */}
+                      <div className="relative p-4 rounded-xl bg-muted/30 border border-border/50 space-y-2">
+                        <div className="flex items-center gap-2 text-muted-foreground">
+                          <Activity className="w-4 h-4" />
+                          <span className="text-xs font-medium">年化波动率</span>
+                        </div>
+                        <p className={`text-2xl font-bold font-mono-nums ${fundDetail.volatility < 15 ? "text-emerald-400" : fundDetail.volatility < 25 ? "text-yellow-400" : "text-red-400"}`}>
+                          {fundDetail.volatility}%
+                        </p>
+                        <div className="w-full h-1.5 rounded-full bg-muted overflow-hidden">
+                          <motion.div
+                            className={`h-full rounded-full ${fundDetail.volatility < 15 ? "bg-emerald-400" : fundDetail.volatility < 25 ? "bg-yellow-400" : "bg-red-400"}`}
+                            initial={{ width: 0 }}
+                            animate={{ width: `${Math.min(100, (fundDetail.volatility / 35) * 100)}%` }}
+                            transition={{ delay: 0.5, duration: 0.6 }}
+                          />
+                        </div>
+                        <p className="text-[10px] text-muted-foreground leading-tight">
+                          {fundDetail.volatility < 15 ? "低波动，适合稳健投资者" : fundDetail.volatility < 25 ? "中等波动，需一定风险承受力" : "高波动，价格起伏剧烈"}
+                        </p>
+                      </div>
+
+                      {/* Beta */}
+                      <div className="relative p-4 rounded-xl bg-muted/30 border border-border/50 space-y-2">
+                        <div className="flex items-center gap-2 text-muted-foreground">
+                          <BarChart3 className="w-4 h-4" />
+                          <span className="text-xs font-medium">Beta 系数</span>
+                        </div>
+                        <p className={`text-2xl font-bold font-mono-nums ${fundDetail.beta < 0.9 ? "text-emerald-400" : fundDetail.beta < 1.2 ? "text-yellow-400" : "text-red-400"}`}>
+                          {fundDetail.beta.toFixed(2)}
+                        </p>
+                        <div className="w-full h-1.5 rounded-full bg-muted overflow-hidden">
+                          <motion.div
+                            className={`h-full rounded-full ${fundDetail.beta < 0.9 ? "bg-emerald-400" : fundDetail.beta < 1.2 ? "bg-yellow-400" : "bg-red-400"}`}
+                            initial={{ width: 0 }}
+                            animate={{ width: `${Math.min(100, (fundDetail.beta / 1.5) * 100)}%` }}
+                            transition={{ delay: 0.55, duration: 0.6 }}
+                          />
+                        </div>
+                        <p className="text-[10px] text-muted-foreground leading-tight">
+                          {fundDetail.beta < 0.8 ? "防御型，市场下跌时抗跌" : fundDetail.beta < 1.1 ? "跟随市场波动，β≈1" : "进攻型，放大市场波动"}
+                        </p>
+                      </div>
+
+                      {/* Alpha */}
+                      <div className="relative p-4 rounded-xl bg-muted/30 border border-border/50 space-y-2">
+                        <div className="flex items-center gap-2 text-muted-foreground">
+                          <Sparkles className="w-4 h-4" />
+                          <span className="text-xs font-medium">Alpha 超额</span>
+                        </div>
+                        <p className={`text-2xl font-bold font-mono-nums ${fundDetail.alpha > 3 ? "text-emerald-400" : fundDetail.alpha > 0 ? "text-yellow-400" : "text-red-400"}`}>
+                          {fundDetail.alpha > 0 ? "+" : ""}{fundDetail.alpha}%
+                        </p>
+                        <div className="w-full h-1.5 rounded-full bg-muted overflow-hidden">
+                          <motion.div
+                            className={`h-full rounded-full ${fundDetail.alpha > 3 ? "bg-emerald-400" : fundDetail.alpha > 0 ? "bg-yellow-400" : "bg-red-400"}`}
+                            initial={{ width: 0 }}
+                            animate={{ width: `${Math.min(100, Math.max(5, (fundDetail.alpha + 5) / 15 * 100))}%` }}
+                            transition={{ delay: 0.6, duration: 0.6 }}
+                          />
+                        </div>
+                        <p className="text-[10px] text-muted-foreground leading-tight">
+                          {fundDetail.alpha > 3 ? "超额收益显著，基金经理选股能力强" : fundDetail.alpha > 0 ? "有一定超额收益，表现尚可" : "未跑赢基准，选股能力待验证"}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Additional metrics row */}
+                    <div className="grid grid-cols-4 gap-3 mt-4 pt-4 border-t border-border/30">
                       {[
-                        { icon: Shield, label: "夏普比率", value: fundDetail.sharpe.toFixed(2), good: fundDetail.sharpe > 1 },
-                        { icon: TrendingDown, label: "最大回撤", value: `${fundDetail.maxDrawdown}%`, good: fundDetail.maxDrawdown > -25 },
-                        { icon: Activity, label: "年化波动", value: `${fundDetail.volatility}%`, good: fundDetail.volatility < 20 },
-                        { icon: TrendingUp, label: "Beta", value: fundDetail.beta.toFixed(2), good: fundDetail.beta < 1.2 },
-                        { icon: Sparkles, label: "Alpha", value: `${fundDetail.alpha}%`, good: fundDetail.alpha > 0 },
-                        { icon: DollarSign, label: "规模(亿)", value: `${fundDetail.fundSize}`, good: fundDetail.fundSize > 20 },
+                        { label: "信息比率", value: fundDetail.infoRatio.toFixed(2), desc: "主动管理能力" },
+                        { label: "跟踪误差", value: `${fundDetail.trackingError}%`, desc: "偏离基准程度" },
+                        { label: "基金规模", value: `${fundDetail.fundSize}亿`, desc: fundDetail.fundSize > 100 ? "大型基金" : fundDetail.fundSize > 20 ? "中型基金" : "小型基金" },
+                        { label: "基金经理", value: fundDetail.manager, desc: `成立于 ${fundDetail.establishDate}` },
                       ].map((item, i) => (
                         <motion.div
                           key={item.label}
-                          initial={{ opacity: 0, x: 10 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          transition={{ delay: 0.4 + i * 0.06 }}
-                          className="flex items-center justify-between text-xs"
+                          initial={{ opacity: 0, y: 8 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: 0.7 + i * 0.05 }}
+                          className="flex flex-col gap-0.5"
                         >
-                          <div className="flex items-center gap-1.5 text-muted-foreground">
-                            <item.icon className="w-3 h-3" />
-                            {item.label}
-                          </div>
-                          <span className={`font-mono-nums font-semibold ${item.good ? "text-emerald-400" : "text-orange-400"}`}>
-                            {item.value}
-                          </span>
+                          <span className="text-[10px] text-muted-foreground">{item.label}</span>
+                          <span className="text-sm font-semibold text-foreground font-mono-nums">{item.value}</span>
+                          <span className="text-[10px] text-muted-foreground/60">{item.desc}</span>
                         </motion.div>
                       ))}
-                    </CardContent>
-                  </Card>
-                </motion.div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </motion.div>
 
-                {/* Fund Info */}
-                <motion.div variants={fadeUp} custom={5}>
-                  <Card className="corner-accent">
-                    <CardHeader className="pb-2 pt-4 px-4">
-                      <CardTitle className="text-sm flex items-center gap-2">
-                        <Users className="w-4 h-4 text-primary" />
-                        基金信息
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent className="px-4 pb-4 space-y-2.5">
-                      {[
-                        { label: "基金经理", value: fundDetail.manager },
-                        { label: "成立日期", value: fundDetail.establishDate },
-                        { label: "基金类型", value: fundDetail.type },
-                        { label: "风险等级", value: `${fundDetail.riskLevel}风险` },
-                        { label: "信息比率", value: fundDetail.infoRatio.toFixed(2) },
-                        { label: "跟踪误差", value: `${fundDetail.trackingError}%` },
-                      ].map((item) => (
-                        <div key={item.label} className="flex items-center justify-between text-xs">
-                          <span className="text-muted-foreground">{item.label}</span>
-                          <span className="text-foreground font-medium">{item.value}</span>
-                        </div>
-                      ))}
-                    </CardContent>
-                  </Card>
-                </motion.div>
-
-                {/* Top Holdings */}
-                <motion.div variants={fadeUp} custom={5}>
-                  <Card className="corner-accent">
-                    <CardHeader className="pb-2 pt-4 px-4">
-                      <CardTitle className="text-sm flex items-center gap-2">
-                        <Sparkles className="w-4 h-4 text-primary" />
-                        前五大持仓
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent className="px-4 pb-4 space-y-2">
+              {/* Top Holdings */}
+              <motion.div variants={fadeUp} custom={5}>
+                <Card className="corner-accent">
+                  <CardHeader className="pb-2 pt-4 px-5">
+                    <CardTitle className="text-sm flex items-center gap-2">
+                      <Sparkles className="w-4 h-4 text-primary" />
+                      前五大持仓
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="px-5 pb-5">
+                    <div className="grid grid-cols-5 gap-3">
                       {fundDetail.topHoldings.map((stock, i) => (
                         <motion.div
                           key={stock.name}
-                          initial={{ opacity: 0, x: -10 }}
-                          animate={{ opacity: 1, x: 0 }}
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ opacity: 1, y: 0 }}
                           transition={{ delay: 0.5 + i * 0.08 }}
-                          className="flex items-center justify-between text-xs"
+                          className="p-3 rounded-lg bg-muted/30 border border-border/50 text-center space-y-1.5"
                         >
-                          <div className="flex items-center gap-2">
-                            <span className="w-5 h-5 rounded-md bg-primary/10 flex items-center justify-center text-[10px] font-bold text-primary">
-                              {i + 1}
-                            </span>
-                            <span className="text-foreground">{stock.name}</span>
+                          <span className="w-6 h-6 rounded-md bg-primary/10 flex items-center justify-center text-[10px] font-bold text-primary mx-auto">
+                            {i + 1}
+                          </span>
+                          <p className="text-xs font-medium text-foreground">{stock.name}</p>
+                          <div className="w-full h-1 rounded-full bg-muted overflow-hidden">
+                            <motion.div
+                              className="h-full rounded-full bg-primary/60"
+                              initial={{ width: 0 }}
+                              animate={{ width: `${Math.min(100, stock.percent * 8)}%` }}
+                              transition={{ delay: 0.6 + i * 0.08, duration: 0.5 }}
+                            />
                           </div>
-                          <div className="flex items-center gap-2">
-                            <div className="w-20 h-1.5 rounded-full bg-muted overflow-hidden">
-                              <motion.div
-                                className="h-full rounded-full bg-primary/60"
-                                initial={{ width: 0 }}
-                                animate={{ width: `${Math.min(100, stock.percent * 8)}%` }}
-                                transition={{ delay: 0.6 + i * 0.08, duration: 0.5 }}
-                              />
-                            </div>
-                            <span className="font-mono-nums text-muted-foreground w-10 text-right">{stock.percent}%</span>
-                          </div>
+                          <p className="text-xs font-mono-nums text-muted-foreground">{stock.percent}%</p>
                         </motion.div>
                       ))}
-                    </CardContent>
-                  </Card>
-                </motion.div>
-              </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </motion.div>
             </motion.div>
           )}
         </AnimatePresence>
