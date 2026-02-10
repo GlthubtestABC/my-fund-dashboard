@@ -39,10 +39,31 @@ function loadFromStorage<T>(key: string, fallback: T): T {
   }
 }
 
+const patchWatchFund = (f: WatchFund): WatchFund => {
+  if (f.navHistory && f.navHistory.length > 0) return f;
+  const nav = f.currentNav || 1;
+  const hist: number[] = [];
+  let v = nav * 0.92;
+  for (let i = 0; i < 30; i++) { v *= 1 + (Math.random() - 0.47) * 0.03; hist.push(parseFloat(v.toFixed(4))); }
+  return {
+    ...f,
+    change1d: f.change1d ?? parseFloat(((Math.random() - 0.5) * 4).toFixed(2)),
+    change1w: f.change1w ?? parseFloat(((Math.random() - 0.5) * 6).toFixed(2)),
+    change6m: f.change6m ?? parseFloat(((Math.random() - 0.5) * 25).toFixed(2)),
+    changeYtd: f.changeYtd ?? parseFloat(((Math.random() - 0.5) * 15).toFixed(2)),
+    riskLevel: f.riskLevel ?? "中",
+    sharpeRatio: f.sharpeRatio ?? parseFloat((Math.random() * 2).toFixed(2)),
+    maxDrawdown: f.maxDrawdown ?? parseFloat((-(Math.random() * 40 + 5)).toFixed(1)),
+    fundSize: f.fundSize ?? parseFloat((Math.random() * 300 + 20).toFixed(0)),
+    fundManager: f.fundManager ?? "未知",
+    navHistory: hist,
+  };
+};
+
 export const FundProvider = ({ children }: { children: ReactNode }) => {
   const [totalAssets, setTotalAssetsState] = useState(() => loadFromStorage("fp_totalAssets", 500000));
   const [holdings, setHoldings] = useState<Fund[]>(() => loadFromStorage("fp_holdings", defaultHoldings));
-  const [watchlist, setWatchlist] = useState<WatchFund[]>(() => loadFromStorage("fp_watchlist", defaultWatch));
+  const [watchlist, setWatchlist] = useState<WatchFund[]>(() => loadFromStorage<WatchFund[]>("fp_watchlist", defaultWatch).map(patchWatchFund));
   const [trades, setTrades] = useState<TradeRecord[]>(() => loadFromStorage("fp_trades", []));
 
   useEffect(() => { localStorage.setItem("fp_totalAssets", JSON.stringify(totalAssets)); }, [totalAssets]);
