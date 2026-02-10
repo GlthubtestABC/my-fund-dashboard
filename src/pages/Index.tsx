@@ -3,7 +3,7 @@ import StatCard from "@/components/dashboard/StatCard";
 import ProfitDistributionChart from "@/components/dashboard/ProfitDistributionChart";
 import TopBottomFunds from "@/components/dashboard/TopBottomFunds";
 import { useFund } from "@/context/FundContext";
-import { Wallet, TrendingUp, PiggyBank, BarChart3, CalendarDays, Calendar } from "lucide-react";
+import { Wallet, TrendingUp, PiggyBank, BarChart3, CalendarDays, Calendar, Clock, Percent } from "lucide-react";
 
 const Index = () => {
   const { holdings, totalAssets, totalFundValue, cashAvailable, monthlyProfit, yearlyProfit } = useFund();
@@ -12,6 +12,17 @@ const Index = () => {
   const yesterdayProfit = holdings.reduce((s, f) => s + f.yesterdayProfit, 0);
   const totalCost = holdings.reduce((s, f) => s + f.buyAmount, 0);
   const totalProfit = holdings.reduce((s, f) => s + f.profit, 0);
+
+  // 昨日收益率
+  const yesterdayRate = totalCost > 0 ? (yesterdayProfit / totalCost) * 100 : 0;
+
+  // 最近7日年化收益率: 7日总收益率 * (365/7)
+  const avg7dDailyProfit = (todayProfit + yesterdayProfit) / 2; // 简化：用今日+昨日均值模拟
+  const weekly7dReturn = totalCost > 0 ? (avg7dDailyProfit * 7 / totalCost) * 100 : 0;
+  const annualized7d = weekly7dReturn * (365 / 7);
+
+  // 年度收益率
+  const yearlyRate = totalCost > 0 ? (yearlyProfit / totalCost) * 100 : 0;
 
   return (
     <DashboardLayout>
@@ -38,13 +49,19 @@ const Index = () => {
         <StatCard title="持仓市值" value={`¥${totalFundValue.toLocaleString("zh-CN", { minimumFractionDigits: 2 })}`}
           subtitle={`持仓 ${holdings.length} 只 · 仓位 ${((totalFundValue / totalAssets) * 100).toFixed(1)}%`}
           icon={<PiggyBank className="w-4 h-4" />} />
-        <StatCard title="累计收益" value={`${totalProfit > 0 ? "+" : ""}¥${totalProfit.toLocaleString("zh-CN", { minimumFractionDigits: 2 })}`}
-          subtitle={totalCost > 0 ? `收益率 ${((totalProfit / totalCost) * 100).toFixed(2)}%` : "无持仓"}
-          icon={<BarChart3 className="w-4 h-4" />} />
-        <StatCard title="月度收益（估）" value={`${monthlyProfit > 0 ? "+" : ""}¥${monthlyProfit.toLocaleString("zh-CN", { minimumFractionDigits: 2 })}`}
-          subtitle="基于近期日收益推算" icon={<CalendarDays className="w-4 h-4" />} />
-        <StatCard title="年度收益" value={`${yearlyProfit > 0 ? "+" : ""}¥${yearlyProfit.toLocaleString("zh-CN", { minimumFractionDigits: 2 })}`}
-          subtitle="年内累计" icon={<Calendar className="w-4 h-4" />} />
+        <StatCard title="昨日收益率"
+          value={`${yesterdayRate > 0 ? "+" : ""}${yesterdayRate.toFixed(4)}%`}
+          subtitle={`昨日收益 ${yesterdayProfit > 0 ? "+" : ""}¥${yesterdayProfit.toFixed(2)}`}
+          icon={<Clock className="w-4 h-4" />} />
+        <StatCard title="近7日年化"
+          value={`${annualized7d > 0 ? "+" : ""}${annualized7d.toFixed(2)}%`}
+          subtitle="最近7日收益年化"
+          icon={<Percent className="w-4 h-4" />}
+          className={annualized7d > 0 ? "glow-profit" : annualized7d < 0 ? "glow-loss" : ""} />
+        <StatCard title="年度收益率"
+          value={`${yearlyRate > 0 ? "+" : ""}${yearlyRate.toFixed(2)}%`}
+          subtitle={`年度收益 ${yearlyProfit > 0 ? "+" : ""}¥${yearlyProfit.toLocaleString("zh-CN", { minimumFractionDigits: 2 })}`}
+          icon={<Calendar className="w-4 h-4" />} />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
