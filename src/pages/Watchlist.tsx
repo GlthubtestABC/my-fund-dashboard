@@ -119,10 +119,10 @@ const Watchlist = () => {
                 <div className="flex items-start gap-4 flex-shrink-0">
                   <div className="text-right">
                     <div className="flex items-baseline gap-1.5">
-                      <span className="text-2xl font-bold font-mono-nums text-foreground">{fund.currentNav.toFixed(4)}</span>
+                      <span className="text-2xl font-bold font-mono-nums text-foreground">{(fund.currentNav ?? 0).toFixed(4)}</span>
                     </div>
                     <div className="flex items-center gap-1 justify-end mt-0.5">
-                      {fund.change1d >= 0 ? <TrendingUp className="w-3 h-3 text-profit" /> : <TrendingDown className="w-3 h-3 text-loss" />}
+                      {(fund.change1d ?? 0) >= 0 ? <TrendingUp className="w-3 h-3 text-profit" /> : <TrendingDown className="w-3 h-3 text-loss" />}
                       <span className={`text-sm font-bold font-mono-nums ${pColor(fund.change1d)}`}>{formatPercent(fund.change1d)}</span>
                       <span className="text-[10px] text-muted-foreground ml-0.5">今日</span>
                     </div>
@@ -136,7 +136,11 @@ const Watchlist = () => {
 
               {/* Sparkline chart */}
               <div className="px-5 py-1">
-                <MiniSparkline data={fund.navHistory} color={sparkColor} height={56} />
+                {fund.navHistory && fund.navHistory.length > 0 ? (
+                  <MiniSparkline data={fund.navHistory} color={sparkColor} height={56} />
+                ) : (
+                  <div className="h-[56px] flex items-center justify-center text-xs text-muted-foreground">暂无走势数据</div>
+                )}
                 <p className="text-[10px] text-muted-foreground mt-0.5">近30日净值走势</p>
               </div>
 
@@ -149,7 +153,7 @@ const Watchlist = () => {
                   { label: "近6月", value: fund.change6m },
                   { label: "近1年", value: fund.change1y },
                   { label: "今年来", value: fund.changeYtd },
-                  { label: "成立来", value: fund.change1y * 1.5 },
+                  { label: "成立来", value: (fund.change1y ?? 0) * 1.5 },
                 ].map((item, idx) => (
                   <div key={idx} className="text-center py-2.5 border-r border-border/30 last:border-r-0">
                     <p className="text-[10px] text-muted-foreground mb-0.5">{item.label}</p>
@@ -163,11 +167,11 @@ const Watchlist = () => {
                 <div className="flex items-center gap-5 text-xs text-muted-foreground">
                   <span className="flex items-center gap-1">
                     <Shield className="w-3 h-3" />
-                    夏普 <span className="text-foreground font-semibold font-mono-nums">{fund.sharpeRatio.toFixed(2)}</span>
+                    夏普 <span className="text-foreground font-semibold font-mono-nums">{(fund.sharpeRatio ?? 0).toFixed(2)}</span>
                   </span>
                   <span className="flex items-center gap-1">
                     <BarChart3 className="w-3 h-3" />
-                    最大回撤 <span className="text-loss font-semibold font-mono-nums">{fund.maxDrawdown.toFixed(1)}%</span>
+                    最大回撤 <span className="text-loss font-semibold font-mono-nums">{(fund.maxDrawdown ?? 0).toFixed(1)}%</span>
                   </span>
                   <span className="flex items-center gap-1">
                     <Wallet className="w-3 h-3" />
