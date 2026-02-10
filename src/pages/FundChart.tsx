@@ -21,7 +21,10 @@ const periods = [
   { label: "3月", days: 90 },
   { label: "6月", days: 180 },
   { label: "1年", days: 365 },
-  { label: "成立以来", days: 730 },
+  { label: "3年", days: 365 * 3 },
+  { label: "5年", days: 365 * 5 },
+  { label: "10年", days: 365 * 10 },
+  { label: "成立以来", days: 365 * 15 },
 ];
 
 const FundChart = () => {
