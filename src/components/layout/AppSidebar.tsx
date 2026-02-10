@@ -4,7 +4,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { useFund } from "@/context/FundContext";
 import {
   LayoutDashboard, TrendingUp, LineChart, BarChart3, Briefcase, Eye,
-  ChevronLeft, ChevronRight, Settings, Zap, RefreshCw,
+  ChevronLeft, ChevronRight, Settings, Zap, RefreshCw, Search,
 } from "lucide-react";
 
 const navItems = [
@@ -15,6 +15,7 @@ const navItems = [
   { icon: TrendingUp, label: "收益曲线", path: "/earnings" },
   { icon: BarChart3, label: "总收益", path: "/total-returns" },
   { icon: RefreshCw, label: "数据同步", path: "/data-sync" },
+  { icon: Search, label: "临时查看", path: "/fund-lookup" },
 ];
 
 const AppSidebar = () => {

@@ -11,6 +11,7 @@ import FundChart from "./pages/FundChart";
 import Earnings from "./pages/Earnings";
 import TotalReturns from "./pages/TotalReturns";
 import DataSync from "./pages/DataSync";
+import FundLookup from "./pages/FundLookup";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -30,6 +31,7 @@ const App = () => (
             <Route path="/earnings" element={<Earnings />} />
             <Route path="/total-returns" element={<TotalReturns />} />
             <Route path="/data-sync" element={<DataSync />} />
+            <Route path="/fund-lookup" element={<FundLookup />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
