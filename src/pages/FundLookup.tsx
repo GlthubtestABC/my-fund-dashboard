@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -118,7 +118,20 @@ const FundLookup = () => {
   const [searchCode, setSearchCode] = useState("");
   const [fundDetail, setFundDetail] = useState<ReturnType<typeof generateFundDetail> | null>(null);
   const [isSearching, setIsSearching] = useState(false);
+  const [chartWidth, setChartWidth] = useState(400);
+  const chartRef = useRef<HTMLDivElement>(null);
   const { holdings, watchlist, addToWatchlist } = useFund();
+
+  useEffect(() => {
+    const measure = () => {
+      if (chartRef.current) {
+        setChartWidth(chartRef.current.offsetWidth - 32); // minus padding
+      }
+    };
+    measure();
+    window.addEventListener("resize", measure);
+    return () => window.removeEventListener("resize", measure);
+  }, [fundDetail]);
 
   const isHolding = fundDetail ? holdings.some(f => f.code === fundDetail.code) : false;
   const isWatching = fundDetail ? watchlist.some(f => f.code === fundDetail.code) : false;
@@ -286,8 +299,8 @@ const FundLookup = () => {
               {/* Charts Row - Full Width */}
               <div className="grid grid-cols-2 gap-4">
                 {/* NAV Chart */}
-                <motion.div variants={fadeUp} custom={2}>
-                  <Card className="corner-accent h-full">
+                <div ref={chartRef}>
+                  <Card className="corner-accent">
                     <CardHeader className="pb-2 pt-4 px-4">
                       <CardTitle className="text-sm flex items-center gap-2">
                         <Activity className="w-4 h-4 text-primary" />
@@ -295,32 +308,28 @@ const FundLookup = () => {
                       </CardTitle>
                     </CardHeader>
                     <CardContent className="px-4 pb-4">
-                      <div style={{ width: "100%", height: 200 }}>
-                        <ResponsiveContainer width="100%" height="100%">
-                          <AreaChart data={fundDetail.navHistory}>
-                            <defs>
-                              <linearGradient id="navGrad" x1="0" y1="0" x2="0" y2="1">
-                                <stop offset="0%" stopColor="hsl(var(--primary))" stopOpacity={0.3} />
-                                <stop offset="100%" stopColor="hsl(var(--primary))" stopOpacity={0} />
-                              </linearGradient>
-                            </defs>
-                            <XAxis dataKey="date" tick={false} axisLine={false} />
-                            <YAxis domain={["auto", "auto"]} tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }} axisLine={false} tickLine={false} />
-                            <Tooltip
-                              contentStyle={{ backgroundColor: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: 8, fontSize: 12 }}
-                              labelStyle={{ color: "hsl(var(--muted-foreground))" }}
-                            />
-                            <Area type="monotone" dataKey="nav" stroke="hsl(var(--primary))" fill="url(#navGrad)" strokeWidth={2} dot={false} />
-                          </AreaChart>
-                        </ResponsiveContainer>
-                      </div>
+                      <AreaChart width={chartWidth} height={200} data={fundDetail.navHistory}>
+                        <defs>
+                          <linearGradient id="navGrad" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stopColor="hsl(var(--primary))" stopOpacity={0.3} />
+                            <stop offset="100%" stopColor="hsl(var(--primary))" stopOpacity={0} />
+                          </linearGradient>
+                        </defs>
+                        <XAxis dataKey="date" tick={false} axisLine={false} />
+                        <YAxis domain={["auto", "auto"]} tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }} axisLine={false} tickLine={false} />
+                        <Tooltip
+                          contentStyle={{ backgroundColor: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: 8, fontSize: 12 }}
+                          labelStyle={{ color: "hsl(var(--muted-foreground))" }}
+                        />
+                        <Area type="monotone" dataKey="nav" stroke="hsl(var(--primary))" fill="url(#navGrad)" strokeWidth={2} dot={false} />
+                      </AreaChart>
                     </CardContent>
                   </Card>
-                </motion.div>
+                </div>
 
                 {/* Return Rate Chart */}
-                <motion.div variants={fadeUp} custom={3}>
-                  <Card className="corner-accent h-full">
+                <div>
+                  <Card className="corner-accent">
                     <CardHeader className="pb-2 pt-4 px-4">
                       <CardTitle className="text-sm flex items-center gap-2">
                         <TrendingUp className="w-4 h-4 text-primary" />
@@ -328,34 +337,30 @@ const FundLookup = () => {
                       </CardTitle>
                     </CardHeader>
                     <CardContent className="px-4 pb-4">
-                      <div style={{ width: "100%", height: 200 }}>
-                        <ResponsiveContainer width="100%" height="100%">
-                          <AreaChart data={fundDetail.navHistory}>
-                            <defs>
-                              <linearGradient id="returnGrad" x1="0" y1="0" x2="0" y2="1">
-                                <stop offset="0%" stopColor="#34d399" stopOpacity={0.3} />
-                                <stop offset="100%" stopColor="#34d399" stopOpacity={0} />
-                              </linearGradient>
-                            </defs>
-                            <XAxis dataKey="date" tick={false} axisLine={false} />
-                            <YAxis
-                              domain={["auto", "auto"]}
-                              tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }}
-                              axisLine={false} tickLine={false}
-                              tickFormatter={(v) => `${v}%`}
-                            />
-                            <Tooltip
-                              contentStyle={{ backgroundColor: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: 8, fontSize: 12 }}
-                              labelStyle={{ color: "hsl(var(--muted-foreground))" }}
-                              formatter={(value: number) => [`${value}%`, "涨幅"]}
-                            />
-                            <Area type="monotone" dataKey="returnRate" stroke="#34d399" fill="url(#returnGrad)" strokeWidth={2} dot={false} />
-                          </AreaChart>
-                        </ResponsiveContainer>
-                      </div>
+                      <AreaChart width={chartWidth} height={200} data={fundDetail.navHistory}>
+                        <defs>
+                          <linearGradient id="returnGrad" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stopColor="#34d399" stopOpacity={0.3} />
+                            <stop offset="100%" stopColor="#34d399" stopOpacity={0} />
+                          </linearGradient>
+                        </defs>
+                        <XAxis dataKey="date" tick={false} axisLine={false} />
+                        <YAxis
+                          domain={["auto", "auto"]}
+                          tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }}
+                          axisLine={false} tickLine={false}
+                          tickFormatter={(v) => `${v}%`}
+                        />
+                        <Tooltip
+                          contentStyle={{ backgroundColor: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: 8, fontSize: 12 }}
+                          labelStyle={{ color: "hsl(var(--muted-foreground))" }}
+                          formatter={(value: number) => [`${value}%`, "涨幅"]}
+                        />
+                        <Area type="monotone" dataKey="returnRate" stroke="#34d399" fill="url(#returnGrad)" strokeWidth={2} dot={false} />
+                      </AreaChart>
                     </CardContent>
                   </Card>
-                </motion.div>
+                </div>
               </div>
 
               {/* Metrics + Fund Info + Top Holdings */}
