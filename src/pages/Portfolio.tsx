@@ -1,4 +1,5 @@
 import { useState, useMemo } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { format } from "date-fns";
 import { CalendarIcon } from "lucide-react";
 import DashboardLayout from "@/components/layout/DashboardLayout";
@@ -11,6 +12,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { toast } from "@/hooks/use-toast";
+import { fadeUp, slideInLeft, staggerContainer, tableRow } from "@/lib/motion";
 
 type SortKey = "profit" | "profitRate" | "todayProfit" | "buyDate" | "buyAmount";
 type SortDir = "asc" | "desc";
@@ -22,7 +24,6 @@ const Portfolio = () => {
   const [sortDir, setSortDir] = useState<SortDir>("desc");
   const [typeFilter, setTypeFilter] = useState<string>("all");
 
-  // Trade dialog state
   const [tradeDialog, setTradeDialog] = useState<{ open: boolean; type: "buy" | "sell"; fund?: Fund }>({ open: false, type: "buy" });
   const [tradeCode, setTradeCode] = useState("");
   const [tradeAmount, setTradeAmount] = useState("");
@@ -70,19 +71,10 @@ const Portfolio = () => {
   const formatPercent = (v: number) => `${v > 0 ? "+" : ""}${v.toFixed(2)}%`;
 
   const getAdvice = (fund: Fund): { label: string; color: string; bg: string } => {
-    // Simple heuristic: today's trend + overall profit rate
-    if (fund.todayProfitRate < -1.5 && fund.profitRate > 5) {
-      return { label: "建议卖出", color: "text-loss", bg: "bg-loss/10" };
-    }
-    if (fund.profitRate > 15) {
-      return { label: "建议卖出", color: "text-loss", bg: "bg-loss/10" };
-    }
-    if (fund.profitRate < -10 && fund.todayProfitRate > 0) {
-      return { label: "建议买入", color: "text-profit", bg: "bg-profit/10" };
-    }
-    if (fund.todayProfitRate > 1 && fund.profitRate < 5) {
-      return { label: "建议买入", color: "text-profit", bg: "bg-profit/10" };
-    }
+    if (fund.todayProfitRate < -1.5 && fund.profitRate > 5) return { label: "建议卖出", color: "text-loss", bg: "bg-loss/10" };
+    if (fund.profitRate > 15) return { label: "建议卖出", color: "text-loss", bg: "bg-loss/10" };
+    if (fund.profitRate < -10 && fund.todayProfitRate > 0) return { label: "建议买入", color: "text-profit", bg: "bg-profit/10" };
+    if (fund.todayProfitRate > 1 && fund.profitRate < 5) return { label: "建议买入", color: "text-profit", bg: "bg-profit/10" };
     return { label: "建议持有", color: "text-primary", bg: "bg-primary/10" };
   };
 
@@ -128,34 +120,40 @@ const Portfolio = () => {
 
   return (
     <DashboardLayout>
-      <div className="flex items-center justify-between mb-6">
+      <motion.div variants={slideInLeft} initial="hidden" animate="visible" className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-xl font-bold text-foreground">持仓管理</h1>
           <p className="text-sm text-muted-foreground mt-1">管理已买入的基金持仓 · 可用资金 <span className="text-foreground font-mono-nums">¥{cashAvailable.toLocaleString("zh-CN", { minimumFractionDigits: 2 })}</span></p>
         </div>
-        <button onClick={() => openBuyDialog()} className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg text-sm font-medium hover:opacity-90 transition-opacity">
+        <motion.button
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          onClick={() => openBuyDialog()}
+          className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg text-sm font-medium hover:opacity-90 transition-opacity"
+        >
           <ShoppingCart className="w-4 h-4" />买入基金
-        </button>
-      </div>
+        </motion.button>
+      </motion.div>
 
-      <div className="flex flex-wrap gap-3 mb-4">
+      <motion.div variants={fadeUp} initial="hidden" animate="visible" custom={1} className="flex flex-wrap gap-3 mb-4">
         <div className="relative flex-1 min-w-[200px] max-w-sm">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           <input type="text" placeholder="搜索基金名称或代码..." value={search} onChange={(e) => setSearch(e.target.value)}
-            className="w-full bg-card border border-border rounded-lg pl-9 pr-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring" />
+            className="w-full bg-card border border-border rounded-lg pl-9 pr-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring transition-shadow focus:shadow-[0_0_12px_hsl(var(--ring)/0.15)]" />
         </div>
         <div className="flex items-center gap-2">
           <Filter className="w-4 h-4 text-muted-foreground" />
           {types.map((t) => (
-            <button key={t} onClick={() => setTypeFilter(t)}
-              className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${typeFilter === t ? "bg-primary text-primary-foreground" : "bg-secondary text-secondary-foreground hover:bg-accent"}`}>
+            <motion.button key={t} onClick={() => setTypeFilter(t)} whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
+              className={`px-3 py-1.5 rounded-md text-xs font-medium transition-all ${typeFilter === t ? "bg-primary text-primary-foreground shadow-[0_0_12px_hsl(var(--primary)/0.3)]" : "bg-secondary text-secondary-foreground hover:bg-accent"}`}>
               {t === "all" ? "全部" : t}
-            </button>
+            </motion.button>
           ))}
         </div>
-      </div>
+      </motion.div>
 
-      <div className="card-gradient rounded-xl border border-border overflow-hidden animate-slide-up">
+      <motion.div variants={fadeUp} initial="hidden" animate="visible" custom={2}
+        className="card-gradient rounded-xl border border-border overflow-hidden relative corner-accent">
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
@@ -171,53 +169,64 @@ const Portfolio = () => {
                 <th className="text-center px-4 py-3 text-xs text-muted-foreground uppercase tracking-wider font-medium">操作</th>
               </tr>
             </thead>
-            <tbody>
-              {sorted.map((fund) => (
-                <tr key={fund.code} className="border-b border-border/50 hover:bg-accent/30 transition-colors">
-                  <td className="px-4 py-3">
-                    <p className="text-sm font-medium text-foreground">{fund.name}</p>
-                    <div className="flex items-center gap-2 mt-0.5">
-                      <span className="text-xs text-muted-foreground">{fund.code}</span>
-                      {fund.tags.map((tag) => (
-                        <span key={tag} className="text-xs bg-secondary text-secondary-foreground px-1.5 py-0.5 rounded">{tag}</span>
-                      ))}
-                    </div>
-                  </td>
-                  <td className="px-4 py-3 text-right font-mono-nums text-sm text-foreground">{formatMoney(fund.buyAmount)}</td>
-                  <td className="px-4 py-3 text-right font-mono-nums text-sm text-foreground">{formatMoney(fund.currentValue)}</td>
-                  <td className={`px-4 py-3 text-right font-mono-nums text-sm font-medium ${fund.profit > 0 ? "text-profit" : "text-loss"}`}>{formatMoney(fund.profit, true)}</td>
-                  <td className={`px-4 py-3 text-right font-mono-nums text-sm font-medium ${fund.profitRate > 0 ? "text-profit" : "text-loss"}`}>{formatPercent(fund.profitRate)}</td>
-                  <td className={`px-4 py-3 text-right font-mono-nums text-sm ${fund.todayProfit > 0 ? "text-profit" : "text-loss"}`}>{formatMoney(fund.todayProfit, true)}</td>
-                  <td className="px-4 py-3 text-right text-xs text-muted-foreground">{fund.buyDate}</td>
-                  <td className="px-4 py-3">
-                    {(() => {
-                      const advice = getAdvice(fund);
-                      return (
-                        <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-semibold ${advice.color} ${advice.bg}`}>
-                          {advice.label}
-                        </span>
-                      );
-                    })()}
-                  </td>
-                  <td className="px-4 py-3">
-                    <div className="flex items-center justify-center gap-1">
-                      <button onClick={() => openBuyDialog(fund)} className="p-1.5 rounded-md hover:bg-profit-muted text-profit transition-colors" title="加仓">
-                        <Plus className="w-3.5 h-3.5" />
-                      </button>
-                      <button onClick={() => openSellDialog(fund)} className="p-1.5 rounded-md hover:bg-loss-muted text-loss transition-colors" title="卖出">
-                        <Minus className="w-3.5 h-3.5" />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
+            <motion.tbody variants={staggerContainer} initial="hidden" animate="visible">
+              <AnimatePresence>
+                {sorted.map((fund) => (
+                  <motion.tr key={fund.code} variants={tableRow}
+                    className="border-b border-border/50 hover:bg-accent/30 transition-colors"
+                    layout>
+                    <td className="px-4 py-3">
+                      <p className="text-sm font-medium text-foreground">{fund.name}</p>
+                      <div className="flex items-center gap-2 mt-0.5">
+                        <span className="text-xs text-muted-foreground">{fund.code}</span>
+                        {fund.tags.map((tag) => (
+                          <span key={tag} className="text-xs bg-secondary text-secondary-foreground px-1.5 py-0.5 rounded">{tag}</span>
+                        ))}
+                      </div>
+                    </td>
+                    <td className="px-4 py-3 text-right font-mono-nums text-sm text-foreground">{formatMoney(fund.buyAmount)}</td>
+                    <td className="px-4 py-3 text-right font-mono-nums text-sm text-foreground">{formatMoney(fund.currentValue)}</td>
+                    <td className={`px-4 py-3 text-right font-mono-nums text-sm font-medium ${fund.profit > 0 ? "text-profit" : "text-loss"}`}>{formatMoney(fund.profit, true)}</td>
+                    <td className={`px-4 py-3 text-right font-mono-nums text-sm font-medium ${fund.profitRate > 0 ? "text-profit" : "text-loss"}`}>{formatPercent(fund.profitRate)}</td>
+                    <td className={`px-4 py-3 text-right font-mono-nums text-sm ${fund.todayProfit > 0 ? "text-profit" : "text-loss"}`}>{formatMoney(fund.todayProfit, true)}</td>
+                    <td className="px-4 py-3 text-right text-xs text-muted-foreground">{fund.buyDate}</td>
+                    <td className="px-4 py-3">
+                      {(() => {
+                        const advice = getAdvice(fund);
+                        return (
+                          <motion.span
+                            initial={{ scale: 0 }}
+                            animate={{ scale: 1 }}
+                            transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                            className={`inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-semibold ${advice.color} ${advice.bg}`}
+                          >
+                            {advice.label}
+                          </motion.span>
+                        );
+                      })()}
+                    </td>
+                    <td className="px-4 py-3">
+                      <div className="flex items-center justify-center gap-1">
+                        <motion.button whileHover={{ scale: 1.2 }} whileTap={{ scale: 0.9 }}
+                          onClick={() => openBuyDialog(fund)} className="p-1.5 rounded-md hover:bg-profit-muted text-profit transition-colors" title="加仓">
+                          <Plus className="w-3.5 h-3.5" />
+                        </motion.button>
+                        <motion.button whileHover={{ scale: 1.2 }} whileTap={{ scale: 0.9 }}
+                          onClick={() => openSellDialog(fund)} className="p-1.5 rounded-md hover:bg-loss-muted text-loss transition-colors" title="卖出">
+                          <Minus className="w-3.5 h-3.5" />
+                        </motion.button>
+                      </div>
+                    </td>
+                  </motion.tr>
+                ))}
+              </AnimatePresence>
               {sorted.length === 0 && (
                 <tr><td colSpan={9} className="text-center py-12 text-muted-foreground text-sm">暂无持仓基金</td></tr>
               )}
-            </tbody>
+            </motion.tbody>
           </table>
         </div>
-      </div>
+      </motion.div>
 
       {/* Trade Dialog */}
       <Dialog open={tradeDialog.open} onOpenChange={(open) => setTradeDialog((p) => ({ ...p, open }))}>
@@ -286,10 +295,14 @@ const Portfolio = () => {
                 </div>
               </>
             )}
-            <button onClick={handleTrade}
-              className={`w-full py-2.5 rounded-lg text-sm font-medium transition-opacity hover:opacity-90 ${tradeDialog.type === "buy" ? "bg-primary text-primary-foreground" : "bg-destructive text-destructive-foreground"}`}>
+            <motion.button
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              onClick={handleTrade}
+              className={`w-full py-2.5 rounded-lg text-sm font-medium transition-all ${tradeDialog.type === "buy" ? "bg-primary text-primary-foreground shadow-[0_0_16px_hsl(var(--primary)/0.3)]" : "bg-destructive text-destructive-foreground shadow-[0_0_16px_hsl(var(--destructive)/0.3)]"}`}
+            >
               {tradeDialog.type === "buy" ? "确认买入" : "确认卖出"}
-            </button>
+            </motion.button>
           </div>
         </DialogContent>
       </Dialog>
