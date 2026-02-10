@@ -69,6 +69,23 @@ const Portfolio = () => {
   const formatMoney = (v: number, showSign = false) => `${showSign && v > 0 ? "+" : ""}¥${v.toLocaleString("zh-CN", { minimumFractionDigits: 2 })}`;
   const formatPercent = (v: number) => `${v > 0 ? "+" : ""}${v.toFixed(2)}%`;
 
+  const getAdvice = (fund: Fund): { label: string; color: string; bg: string } => {
+    // Simple heuristic: today's trend + overall profit rate
+    if (fund.todayProfitRate < -1.5 && fund.profitRate > 5) {
+      return { label: "建议卖出", color: "text-loss", bg: "bg-loss/10" };
+    }
+    if (fund.profitRate > 15) {
+      return { label: "建议卖出", color: "text-loss", bg: "bg-loss/10" };
+    }
+    if (fund.profitRate < -10 && fund.todayProfitRate > 0) {
+      return { label: "建议买入", color: "text-profit", bg: "bg-profit/10" };
+    }
+    if (fund.todayProfitRate > 1 && fund.profitRate < 5) {
+      return { label: "建议买入", color: "text-profit", bg: "bg-profit/10" };
+    }
+    return { label: "建议持有", color: "text-primary", bg: "bg-primary/10" };
+  };
+
   const openBuyDialog = (fund?: Fund) => {
     setTradeDialog({ open: true, type: "buy", fund });
     setTradeCode(fund?.code || "");
@@ -150,6 +167,7 @@ const Portfolio = () => {
                 <th className="text-right px-4 py-3"><SortHeader label="收益率" sortKeyName="profitRate" /></th>
                 <th className="text-right px-4 py-3"><SortHeader label="今日收益" sortKeyName="todayProfit" /></th>
                 <th className="text-right px-4 py-3"><SortHeader label="买入时间" sortKeyName="buyDate" /></th>
+                <th className="text-center px-4 py-3 text-xs text-muted-foreground uppercase tracking-wider font-medium">建议</th>
                 <th className="text-center px-4 py-3 text-xs text-muted-foreground uppercase tracking-wider font-medium">操作</th>
               </tr>
             </thead>
@@ -172,6 +190,16 @@ const Portfolio = () => {
                   <td className={`px-4 py-3 text-right font-mono-nums text-sm ${fund.todayProfit > 0 ? "text-profit" : "text-loss"}`}>{formatMoney(fund.todayProfit, true)}</td>
                   <td className="px-4 py-3 text-right text-xs text-muted-foreground">{fund.buyDate}</td>
                   <td className="px-4 py-3">
+                    {(() => {
+                      const advice = getAdvice(fund);
+                      return (
+                        <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-semibold ${advice.color} ${advice.bg}`}>
+                          {advice.label}
+                        </span>
+                      );
+                    })()}
+                  </td>
+                  <td className="px-4 py-3">
                     <div className="flex items-center justify-center gap-1">
                       <button onClick={() => openBuyDialog(fund)} className="p-1.5 rounded-md hover:bg-profit-muted text-profit transition-colors" title="加仓">
                         <Plus className="w-3.5 h-3.5" />
@@ -184,7 +212,7 @@ const Portfolio = () => {
                 </tr>
               ))}
               {sorted.length === 0 && (
-                <tr><td colSpan={8} className="text-center py-12 text-muted-foreground text-sm">暂无持仓基金</td></tr>
+                <tr><td colSpan={9} className="text-center py-12 text-muted-foreground text-sm">暂无持仓基金</td></tr>
               )}
             </tbody>
           </table>
