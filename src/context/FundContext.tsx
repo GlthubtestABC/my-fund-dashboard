@@ -64,18 +64,35 @@ export const FundProvider = ({ children }: { children: ReactNode }) => {
   const addToWatchlist = useCallback((code: string, name: string) => {
     setWatchlist((prev) => {
       if (prev.find((f) => f.code === code)) return prev;
+      const nav = 1.0 + Math.random();
+      const genHist = () => {
+        const d: number[] = [];
+        let v = nav * 0.9;
+        for (let i = 0; i < 30; i++) { v *= 1 + (Math.random() - 0.47) * 0.03; d.push(parseFloat(v.toFixed(4))); }
+        return d;
+      };
       return [
         ...prev,
         {
           code,
           name: name || `基金${code}`,
           type: "未知",
-          currentNav: 1.0 + Math.random(),
+          currentNav: parseFloat(nav.toFixed(4)),
+          change1d: parseFloat(((Math.random() - 0.5) * 4).toFixed(2)),
+          change1w: parseFloat(((Math.random() - 0.5) * 6).toFixed(2)),
           change1m: parseFloat(((Math.random() - 0.5) * 10).toFixed(2)),
           change3m: parseFloat(((Math.random() - 0.5) * 20).toFixed(2)),
+          change6m: parseFloat(((Math.random() - 0.5) * 25).toFixed(2)),
           change1y: parseFloat(((Math.random() - 0.5) * 30).toFixed(2)),
+          changeYtd: parseFloat(((Math.random() - 0.5) * 15).toFixed(2)),
           addedDate: new Date().toISOString().split("T")[0],
           tags: [],
+          riskLevel: (["低", "中低", "中", "中高", "高"] as const)[Math.floor(Math.random() * 5)],
+          sharpeRatio: parseFloat((Math.random() * 2).toFixed(2)),
+          maxDrawdown: parseFloat((-(Math.random() * 40 + 5)).toFixed(1)),
+          fundSize: parseFloat((Math.random() * 500 + 10).toFixed(0)),
+          fundManager: "未知",
+          navHistory: genHist(),
         },
       ];
     });

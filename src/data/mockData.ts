@@ -24,13 +24,23 @@ export interface WatchFund {
   name: string;
   type: string;
   currentNav: number;
+  change1d: number;
+  change1w: number;
   change1m: number;
   change3m: number;
+  change6m: number;
   change1y: number;
+  changeYtd: number;
   addedDate: string;
   tags: string[];
   alertNavBelow?: number;
   alertGainAbove?: number;
+  riskLevel: "低" | "中低" | "中" | "中高" | "高";
+  sharpeRatio: number;
+  maxDrawdown: number;
+  fundSize: number; // 亿
+  fundManager: string;
+  navHistory: number[]; // recent 30-day nav data for sparkline
 }
 
 export interface DailyReturn {
@@ -195,12 +205,22 @@ export const holdingFunds: Fund[] = [
   },
 ];
 
+function genNavHistory(base: number, volatility = 0.015): number[] {
+  const data: number[] = [];
+  let v = base * (1 - volatility * 15);
+  for (let i = 0; i < 30; i++) {
+    v *= 1 + (Math.random() - 0.47) * volatility * 2;
+    data.push(parseFloat(v.toFixed(4)));
+  }
+  return data;
+}
+
 export const watchFunds: WatchFund[] = [
-  { code: "320007", name: "诺安成长混合", type: "混合型", currentNav: 1.82, change1m: 5.2, change3m: 12.8, change1y: -3.4, addedDate: "2024-12-01", tags: ["科技", "待买入"], alertNavBelow: 1.70, alertGainAbove: 8 },
-  { code: "001838", name: "国投瑞银中证创业成长指数", type: "指数型", currentNav: 0.96, change1m: 3.1, change3m: 8.5, change1y: 15.2, addedDate: "2024-11-15", tags: ["创业板", "观察中"] },
-  { code: "519674", name: "银河创新成长混合", type: "混合型", currentNav: 4.35, change1m: -2.1, change3m: 6.4, change1y: 22.8, addedDate: "2025-01-05", tags: ["科技", "稳健型"] },
-  { code: "004851", name: "广发医疗保健股票", type: "股票型", currentNav: 2.18, change1m: 1.8, change3m: -4.2, change1y: -12.5, addedDate: "2024-10-20", tags: ["医药", "抄底"] },
-  { code: "161903", name: "万家行业优选混合", type: "混合型", currentNav: 1.56, change1m: 4.5, change3m: 9.7, change1y: 18.3, addedDate: "2025-01-20", tags: ["稳健型", "待买入"] },
+  { code: "320007", name: "诺安成长混合", type: "混合型", currentNav: 1.82, change1d: 1.25, change1w: 3.4, change1m: 5.2, change3m: 12.8, change6m: 8.1, change1y: -3.4, changeYtd: 6.7, addedDate: "2024-12-01", tags: ["科技", "待买入"], alertNavBelow: 1.70, alertGainAbove: 8, riskLevel: "高", sharpeRatio: 0.85, maxDrawdown: -32.5, fundSize: 312, fundManager: "蔡嵩松", navHistory: genNavHistory(1.82) },
+  { code: "001838", name: "国投瑞银中证创业成长指数", type: "指数型", currentNav: 0.96, change1d: -0.52, change1w: 1.2, change1m: 3.1, change3m: 8.5, change6m: 12.3, change1y: 15.2, changeYtd: 4.8, addedDate: "2024-11-15", tags: ["创业板", "观察中"], riskLevel: "中高", sharpeRatio: 1.12, maxDrawdown: -28.7, fundSize: 45, fundManager: "殷瑞飞", navHistory: genNavHistory(0.96) },
+  { code: "519674", name: "银河创新成长混合", type: "混合型", currentNav: 4.35, change1d: 0.78, change1w: -1.5, change1m: -2.1, change3m: 6.4, change6m: 15.6, change1y: 22.8, changeYtd: 9.2, addedDate: "2025-01-05", tags: ["科技", "稳健型"], riskLevel: "中高", sharpeRatio: 1.35, maxDrawdown: -25.1, fundSize: 186, fundManager: "郑巍山", navHistory: genNavHistory(4.35, 0.012) },
+  { code: "004851", name: "广发医疗保健股票", type: "股票型", currentNav: 2.18, change1d: -1.32, change1w: -3.2, change1m: 1.8, change3m: -4.2, change6m: -8.9, change1y: -12.5, changeYtd: -2.1, addedDate: "2024-10-20", tags: ["医药", "抄底"], riskLevel: "高", sharpeRatio: 0.45, maxDrawdown: -45.2, fundSize: 98, fundManager: "吴兴武", navHistory: genNavHistory(2.18, 0.02) },
+  { code: "161903", name: "万家行业优选混合", type: "混合型", currentNav: 1.56, change1d: 0.35, change1w: 2.1, change1m: 4.5, change3m: 9.7, change6m: 14.2, change1y: 18.3, changeYtd: 7.5, addedDate: "2025-01-20", tags: ["稳健型", "待买入"], riskLevel: "中", sharpeRatio: 1.58, maxDrawdown: -18.6, fundSize: 67, fundManager: "黄海", navHistory: genNavHistory(1.56, 0.01) },
 ];
 
 // Generate historical data
