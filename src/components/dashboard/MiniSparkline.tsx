@@ -7,10 +7,10 @@ interface MiniSparklineProps {
   height?: number;
 }
 
-const MiniSparkline = ({ data, color = "hsl(160, 70%, 44%)", height = 40 }: MiniSparklineProps) => {
+const MiniSparkline = ({ data, color = "hsl(0, 85%, 55%)", height = 40 }: MiniSparklineProps) => {
   const chartData = useMemo(() => data.map((v, i) => ({ i, v })), [data]);
   const isPositive = data.length > 1 && data[data.length - 1] >= data[0];
-  const lineColor = color || (isPositive ? "hsl(160, 70%, 44%)" : "hsl(0, 72%, 56%)");
+  const lineColor = color || (isPositive ? "hsl(0, 85%, 55%)" : "hsl(140, 60%, 38%)");
 
   return (
     <div style={{ height }}>

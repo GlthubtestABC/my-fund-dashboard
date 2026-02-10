@@ -6,8 +6,8 @@ import { Eye, Tag, Bell, Trash2, Plus, TrendingUp, TrendingDown, Shield, BarChar
 import { toast } from "@/hooks/use-toast";
 
 const riskColors: Record<string, string> = {
-  "低": "text-profit bg-profit/10",
-  "中低": "text-[hsl(160,50%,55%)] bg-[hsl(160,50%,55%)]/10",
+  "低": "text-[hsl(210,70%,55%)] bg-[hsl(210,70%,55%)]/10",
+  "中低": "text-[hsl(180,60%,45%)] bg-[hsl(180,60%,45%)]/10",
   "中": "text-warning bg-warning/10",
   "中高": "text-[hsl(20,80%,55%)] bg-[hsl(20,80%,55%)]/10",
   "高": "text-loss bg-loss/10",
@@ -92,7 +92,7 @@ const Watchlist = () => {
 
       <div className="grid gap-4">
         {filtered.map((fund) => {
-          const sparkColor = fund.change1m >= 0 ? "hsl(160, 70%, 44%)" : "hsl(0, 72%, 56%)";
+          const sparkColor = fund.change1m >= 0 ? "hsl(0, 85%, 55%)" : "hsl(140, 60%, 38%)";
           const riskStyle = riskColors[fund.riskLevel] || "text-muted-foreground bg-muted";
           return (
             <div key={fund.code} className="card-gradient rounded-xl border border-border hover:border-primary/30 transition-all animate-slide-up group overflow-hidden">

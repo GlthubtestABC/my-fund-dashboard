@@ -5,11 +5,11 @@ const AssetAllocationBar = () => {
 
   const typeMap: Record<string, { amount: number; color: string }> = {};
   const colorMap: Record<string, string> = {
-    "混合型": "hsl(200, 80%, 55%)",
-    "指数型": "hsl(160, 70%, 44%)",
-    "股票型": "hsl(340, 75%, 55%)",
-    "债券型": "hsl(38, 92%, 50%)",
-    "未知": "hsl(280, 65%, 60%)",
+    "混合型": "hsl(35, 95%, 55%)",
+    "指数型": "hsl(210, 70%, 55%)",
+    "股票型": "hsl(0, 85%, 55%)",
+    "债券型": "hsl(180, 60%, 45%)",
+    "未知": "hsl(280, 55%, 55%)",
   };
 
   holdings.forEach((f) => {

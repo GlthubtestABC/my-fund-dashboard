@@ -91,7 +91,7 @@ const TotalReturns = () => {
                 type="monotone"
                 dataKey="totalProfit"
                 name="累计收益"
-                stroke="hsl(160, 70%, 44%)"
+                stroke="hsl(0, 85%, 55%)"
                 strokeWidth={2}
                 dot={false}
                 activeDot={{ r: 4 }}
